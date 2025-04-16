@@ -37,3 +37,6 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# Localy stored libraries (only commiting the renv log file containing the information about the version of the used libraries [and not commiting the libraries itselves])
+renv/library/
