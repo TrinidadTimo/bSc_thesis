@@ -1,0 +1,19 @@
+#!/bin/bash
+
+
+## Calculating detrended variance, rel variance, mean on global aggregated level
+## Differences to Beni's script:
+## Short cut for lobal totals: aggregated grid area directly multiplied with var values.
+## ...
+
+proc_trendy_single () {
+##-----------------------------
+	## argument 1: base file name
+	##-----------------------------
+	## detrend at each gridcell
+
+
+
+}
+
+ 
