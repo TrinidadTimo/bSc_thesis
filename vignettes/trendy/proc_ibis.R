@@ -4,14 +4,13 @@ library(raster)
 setwd("~")
 
 # GPP:
-nc <- nc_open("../../data_2/scratch/ttrinidad/data/trendy/raw/LPX-Bern_S3_gpp.nc")
+nc <- nc_open("../../data_2/scratch/ttrinidad/data/trendy/raw/IBIS_S3_gpp.nc")
 
 time_units <- nc$dim$time$units
 gpp_unit <- nc$var$gpp$units
 time <- nc$dim$time$vals
 gpp <- ncvar_get( nc, varid = "gpp")
 nc_close(nc)
-
 
 # temporal aggregation
 ## separate months and years axes
@@ -48,13 +47,9 @@ gpp_annual_global <- apply(area_array*gpp_annual_detr, 3, sum, na.rm = TRUE) # i
 gpp_iav <- sd(gpp_annual_global)
 
 
-
-
-
-
 #NBP:
 
-nc <- nc_open("../../data_2/scratch/ttrinidad/data/trendy/raw/LPX-Bern_S3_nbp.nc")
+nc <- nc_open("../../data_2/scratch/ttrinidad/data/trendy/raw/IBIS_S3_nbp.nc")
 
 nbp_unit <- nc$var$nbp$units
 nbp <- ncvar_get( nc, varid = "nbp")
@@ -81,6 +76,5 @@ nbp_annual_detr <- aperm(nbp_annual_detr, c(2,3,1))
 # spatial aggregation:
 nbp_annual_global <- apply(area_array*nbp_annual_detr, 3, sum, na.rm = TRUE) # in kg*C
 
-# IAV of global annual GPP
+# IAV of global annual NBP
 nbp_iav <- sd(nbp_annual_global)
-
