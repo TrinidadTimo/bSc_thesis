@@ -1,10 +1,7 @@
 library(ncdf4)
 library(raster)
 
-setwd("~")
-
-# GPP:
-nc <- nc_open("../../data_2/scratch/ttrinidad/data/trendy/raw/ISAM_S3_nbp.nc")
+nc <- nc_open("~/../../data_2/scratch/ttrinidad/data/trendy/raw/ISAM_S3_nbp.nc")
 
 time_units <- nc$dim$time$units
 
@@ -38,7 +35,7 @@ nbp_annual_detr <- aperm(nbp_annual_detr, c(2,3,1))
 
 # spatial aggregation
 ## area weightening matrix:
-pseudo_raster <- raster::raster(nrows = 360, ncols = 720, xmn = -179.75, xmx = 179.75, ymn = -89.75, ymx = 89.75)
+pseudo_raster <- raster::raster(nrows = 360, ncols = 720, xmn = 0.25, xmx = 359.75, ymn = -89.75, ymx = 89.75)
 area_raster <- (raster::area(pseudo_raster))*1e6 # returning filed areas, connverted from km2 to m2
 area_matrix <- t(matrix(raster::getValues(area_raster), nrow= 360, ncol = 720)) # Need to transpose here as lon, lat are flipped in the pseudo_raster
 area_array <- array(rep(area_matrix, times = dim(nbp_annual_detr)[3]),
@@ -46,5 +43,7 @@ area_array <- array(rep(area_matrix, times = dim(nbp_annual_detr)[3]),
 
 nbp_annual_global <- apply(area_array*nbp_annual_detr, 3, sum, na.rm = TRUE) # in kg*C
 
+isam_nbp_annual_global <- nbp_annual_global*1e-12 #in Pg*C
+
 # IAV of global annual NBP
-nbp_iav <- sd(nbp_annual_global)
+isam_nbp_iav <- sd(isam_nbp_annual_global)

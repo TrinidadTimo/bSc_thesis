@@ -1,11 +1,14 @@
 library(ncdf4)
 library(raster)
 
+setwd("~")
+
+
 # GPP:
-nc <- nc_open("~/../../data_2/scratch/ttrinidad/data/trendy/raw/LPX-Bern_S3_gpp.nc")
+nc <- nc_open("../../data_2/scratch/ttrinidad/data/trendy/raw/DLEM_S3_gpp.nc")
 
 time_units <- nc$dim$time$units
-gpp_unit <- nc$var$gpp$units
+gpp_unit <- nc$var$gpp$units # see ncdump -h -> gpp in kg C m-2 s-1
 time <- nc$dim$time$vals
 gpp <- ncvar_get( nc, varid = "gpp")
 nc_close(nc)
@@ -30,7 +33,7 @@ gpp_annual_detr <- apply(gpp_annual, c(1,2), pracma::detrend, tt= "linear")
 
 ## adjust dimension order again:
 dim(gpp_annual_detr)
-gpp_annual_detr <- aperm(gpp_annual_detr, c(2,3,1))
+gpp_annual_detr <- aperm(gpp_annual_detr, c(3,1,2))
 
 # spatial aggregation
 ## Area weightening matrix:
@@ -42,16 +45,19 @@ area_array <- array(rep(area_matrix, times = dim(gpp_annual_detr)[3]),
 
 gpp_annual_global <- apply(area_array*gpp_annual_detr, 3, sum, na.rm = TRUE) # in kg*C
 
-lpx_gpp_annual_global <- gpp_annual_global*1e-12 #in Pg*C
+dlem_gpp_annual_global <- gpp_annual_global*1e-12 #in Pg*C
 
 # IAV of global annual GPP
-lpx_gpp_iav <- sd(lpx_gpp_annual_global)
+dlem_gpp_iav <- sd(dlem_gpp_annual_global)
+
+
+
 
 
 
 #NBP:
 
-nc <- nc_open("~/../../data_2/scratch/ttrinidad/data/trendy/raw/LPX-Bern_S3_nbp.nc")
+nc <- nc_open("../../data_2/scratch/ttrinidad/data/trendy/raw/DLEM_S3_nbp.nc")
 
 nbp_unit <- nc$var$nbp$units
 nbp <- ncvar_get( nc, varid = "nbp")
@@ -78,9 +84,7 @@ nbp_annual_detr <- aperm(nbp_annual_detr, c(2,3,1))
 # spatial aggregation:
 nbp_annual_global <- apply(area_array*nbp_annual_detr, 3, sum, na.rm = TRUE) # in kg*C
 
-lpx_nbp_annual_global <- nbp_annual_global*1e-12 #in Pg*C
+dlem_nbp_annual_global <- nbp_annual_global*1e-12 #in Pg*C
 
-
-# IAV of global annual NBP
-lpx_nbp_iav <- sd(lpx_nbp_annual_global)
-
+# IAV of global annual GPP
+dlem_nbp_iav <- sd(dlem_nbp_annual_global)

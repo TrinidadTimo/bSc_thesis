@@ -31,7 +31,7 @@ gpp_annual_detr <- apply(gpp_annual, c(1,2), pracma::detrend, tt= "linear")
 
 ## adjust dimension order again:
 dim(gpp_annual_detr)
-gpp_annual_detr <- aperm(gpp_annual_detr, c(3,1,2))
+gpp_annual_detr <- aperm(gpp_annual_detr, c(2,3,1)) # CORRECT??
 
 # spatial aggregation
 ## Area weightening matrix:
@@ -43,8 +43,10 @@ area_array <- array(rep(area_matrix, times = dim(gpp_annual_detr)[3]),
 
 gpp_annual_global <- apply(area_array*gpp_annual_detr, 3, sum, na.rm = TRUE) # in kg*C
 
+ibis_gpp_annual_global <- gpp_annual_global*1e-12 #in Pg*C
+
 # IAV of global annual GPP
-gpp_iav <- sd(gpp_annual_global)
+ibis_gpp_iav <- sd(ibis_gpp_annual_global)
 
 
 #NBP:
@@ -53,7 +55,7 @@ nc <- nc_open("../../data_2/scratch/ttrinidad/data/trendy/raw/IBIS_S3_nbp.nc")
 
 nbp_unit <- nc$var$nbp$units
 nbp <- ncvar_get( nc, varid = "nbp")
-nc_close(nc_nbp)
+nc_close(nc)
 
 # temporal aggregation:
 ## separate months and years axes
@@ -76,5 +78,8 @@ nbp_annual_detr <- aperm(nbp_annual_detr, c(2,3,1))
 # spatial aggregation:
 nbp_annual_global <- apply(area_array*nbp_annual_detr, 3, sum, na.rm = TRUE) # in kg*C
 
+ibis_nbp_annual_global <- nbp_annual_global*1e-12 #in Pg*C
+
+
 # IAV of global annual NBP
-nbp_iav <- sd(nbp_annual_global)
+ibis_nbp_iav <- sd(ibis_nbp_annual_global)
