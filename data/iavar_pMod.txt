@@ -1,0 +1,2 @@
+Model, IAVAR_GPP, IAVAR_NBP
+P-Mod_s1B, 2.097121, NA
