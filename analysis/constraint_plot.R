@@ -5,33 +5,32 @@ library(ggpmisc)
 library(readr)
 
 # Loading TRENDY IAVAR table
-trendy <- read.delim(here("../data/trendy/S3/iavar/R/IAVAR_R.txt"), header=FALSE)
+trendy <- read_delim("data/iavar_trendy.txt", delim = "\t", escape_double = FALSE, col_names = FALSE, trim_ws = TRUE)
 colnames(trendy) <- c("Model", "IAVAR_GPP", "IAVAR_NBP")
 
 # Loading CMIP6 table
-cmip <- read.csv(here("../data/CMIP6/IAVAR/IAVAR_CMIP6.csv"), dec=",")
-cmip$IAVAR_GPP <- as.numeric(cmip$IAVAR_GPP)
-cmip$IAVAR_NBP <- as.numeric(cmip$IAVAR_NBP)
+cmip <- read_csv("data/iavar_cmip.txt", col_types = cols(IAVAR_GPP = col_number(), IAVAR_NBP = col_number()))
 
 # Loading FLUXCOM GPP IAVAR
-fluxcom <- read.csv(here("../data/rs_models/FLUXCOM/raw/GPP/ENS/processed/IAV.1982_2011.txt"), sep=";")
+fluxcom <- read_delim("data/iavar_fluxcom.txt", delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 # Loading P-Mod S1b GPP IAVAR
-p.mod <- read.csv("/data_2/scratch/ttrinidad/data/rs_models/P-Mod/IAVAR/s1b_fapar3g_v2_global.d.gpp_IAVAR.txt")
-p.mod$IAVAR_NBP <- 0.05
+pMod <- read_csv("data/iavar_pMod.txt")
+p.mod$IAVAR_NBP <- 0.05 # Defining an artificial NBP value to place in the plot.
 
 # Loading (and extracting) GCP obs. NBP IAVAR
-nbp_obs <- as.numeric(read_csv("/data_2/scratch/ttrinidad/data/GCP/IAVAR_NBP_obs.csv",
+nbp_obs <- as.numeric(read_csv("data/iavar_gcb.txt",
                           col_names = FALSE)[1,1])
 
 
-# Building an overall table including TRENDY, CMIP6, (Fluxcom?)
+# Building an overall table including TRENDY, CMIP6, Fluxcom
 trendy$Model.Group <- rep("TRENDY-v12 S3", nrow(trendy))
 cmip$Model.Group <- rep("CMIP6, historical", nrow(cmip))
+fluxcom$Model.Group <- rep("FLUXCOM", nrow(fluxcom))
 
 df <- trendy |>
-  filter (!(Model %in% c("ISBA-CTRIP"))) |>
-  bind_rows(cmip)
+  filter (!(Model %in% c("ISBA-CTRIP"))) |> # ISBA has 0 value in both variables.
+  bind_rows(cmip, fluxcom)
 
 # Regression coefficients:
 fit <- df |> filter( !(Model %in% c("MPI-ESM-1-2-HAM"))) |> lm(formula= IAVAR_GPP ~ IAVAR_NBP, data= _)
@@ -39,47 +38,6 @@ intercept <- coef(fit)[1]
 slope <- coef(fit)[2]
 rsq <- summary(fit)$r.squared
 label_rsq <- bquote("linear fit, " ~ italic(R)^2 ~ "=" ~ .(round(rsq, 2)))
-
-## Bootstrapping:
-fit <- lm(formula= IAVAR_GPP ~ IAVAR_NBP, data= df)
-res_df <- residuals(fit)
-B <- 1000
-n <- nrow(df)
-residual_matrix <- matrix(NA, nrow = n, ncol = B)
-
-set.seed(123)  # Reproduzierbarkeit
-
-for (b in 1:B) {
-  idx <- sample(1:n, size = n, replace = TRUE)
-  df_b <- df[idx, ]
-  model_b <- lm(formula= IAVAR_GPP ~ IAVAR_NBP, data = df_b)
-
-  # Residuen am Original-Datensatz
-  preds <- predict(model_b, newdata = df)
-  residuals_b <- df$IAVAR_GPP - preds
-  residual_matrix[, b] <- residuals_b
-}
-
-lower <- apply(residual_matrix, 1, quantile, probs = 0.025)
-upper <- apply(residual_matrix, 1, quantile, probs = 0.975)
-
-outliers_q <- which(res_df < lower | res_df > upper)
-
-
-
-
-
-# Creating another df, which will be used for a clean legend in the following plot:
-legend_df <- data.frame(
-  type  = c("CMIP6, historical", "TRENDY-v12 S3", "P-Modell", "GCB SLAND"),
-  x     = NA,   # Werte egal, da nur für Legende
-  y     = NA,
-  color = c("#F4A261", "#B96BA3", "black", "grey50"),
-  shape = c(16, 17, 8, NA),
-  linetype = c(NA, NA, NA, "dashed"),
-  size  = c(1.5, 1.5, 2, 0.5)
-)
-
 # Plot
 ggplot(df, aes(x = IAVAR_NBP, y = IAVAR_GPP)) +
   geom_point(aes(color = Model.Group, shape = Model.Group), size = 1.5) +
@@ -121,44 +79,3 @@ ggplot(df, aes(x = IAVAR_NBP, y = IAVAR_GPP)) +
     legend.title = element_blank(),
     panel.grid = element_blank()
   )
-
-
-
-
-  # Axis scaling:
-  coord_fixed(ratio = 1) +
-  xlim(0,6) + ylim(0,6) +
-
-  # Legend:
-  scale_shape_manual(values = c("TRENDYv12 S3" = 16, "CMIP6, historical" = 17, "P-model" = 8)) +
-  scale_color_manual(values = c("TRENDYv12 S3" = "#1f78b4", "CMIP6, historical" = "#33a02c", "P-model" = "black")) +
-  scale_linetype_manual(name = "", values = c("Regression" = "solid"))
-  labs(
-    title = " ",
-    x = expression(sigma[GPP]~(PgC~yr^{-1})),
-    y = expression(sigma[NBP]~(PgC~yr^{-1})),
-  ) +
-  geom_smooth(method = "lm", aes(group = 1), fullrange= TRUE, se= TRUE, color = "black", linewidth= 0.5) +
-  stat_poly_eq(
-    aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~"), group = 1),
-    formula = y ~ x, parse = TRUE,
-    label.x.npc = 0.95,
-    label.y.npc = 0.95,
-    size = 3, color = "black"
-  ) +
-  geom_vline(xintercept= nbp_obs, color= "grey") +
-  coord_cartesian(xlim = c(0,6), ylim = c(0,6)) +
-  geom_hline(yintercept= p.mod[1,2], linetype= "dashed", color= "red") +
-  theme_bw() +
-  theme(
-    panel.grid = element_blank(),
-    legend.position = c(0.8, 0.8),
-    legend.title = element_blank(),
-    legend.background = element_blank()
-  )
-
-
-# To DO
-# - Title
-# - Legend-Fit
-# -
