@@ -10,9 +10,7 @@ trendy <- read_delim("data/iavar_trendy.txt", delim = "\t", escape_double = FALS
 colnames(trendy) <- c("Model", "IAVAR_GPP", "IAVAR_NBP")
 
 # Loading CMIP6 table
-cmip <- read_csv("data/iavar_cmip.txt",
-                       col_types = cols(IAVAR_GPP = col_number(),
-                                        IAVAR_NBP = col_number()))
+cmip <- read_csv("data/iavar_cmip.txt", col_types = cols(IAVAR_GPP = col_number(), IAVAR_NBP = col_number()))
 
 df <- trendy |>
   filter (!(Model %in% c("ISBA-CTRIP"))) |> # ISBA has 0 in both variables.
