@@ -6,7 +6,7 @@ library(dplyr)
 library(RANSAC)
 
 # Loading TRENDY IAVAR table
-trendy <- read.delim(here("data/iavar_trendy.txt"), header=FALSE)
+trendy <- read_delim("data/iavar_trendy.txt", delim = "\t", escape_double = FALSE, col_names = FALSE, trim_ws = TRUE)
 colnames(trendy) <- c("Model", "IAVAR_GPP", "IAVAR_NBP")
 
 # Loading CMIP6 table
