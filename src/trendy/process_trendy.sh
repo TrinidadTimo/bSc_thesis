@@ -1,29 +1,36 @@
 #!/bin/bash
-
 proc_trendy_single (){
   ##-----------------------------
-  ## argument 1: base file name (full path) of monthly file (gC m-2 s-1)
+  ## argument 1: Input - base file name
+  ##
   ##-----------------------------
+  raw_dir="/data_2/scratch/ttrinidad/data/trendy/raw"
+  secs_dir="/data_2/scratch/ttrinidad/data/trendy/secs_per_month"
+  ann_dir="/data_2/scratch/ttrinidad/data/trendy/ann/R"
+  glob_dir="/data_2/scratch/ttrinidad/data/trendy/ann_glob_absolute/R"
+  detr_dir="/data_2/scratch/ttrinidad/data/trendy/ann_glob_detr/R"
+  iasd_dir="/data_2/scratch/ttrinidad/data/trendy/iasd/R"
+
   ## 1. get annual total (gC m-2 yr-1)
   ## This requires seconds per month to be calculated beforehand, using R/create_secs_per_month.R
-  cdo mulc,1000 -yearsum -mul ${1}_gpp.nc ${1}_seconds_per_month.nc ${1}_gpp_ANN.nc
-  cdo mulc,1000 -yearsum -mul ${1}_nbp.nc ${1}_seconds_per_month.nc ${1}_nbp_ANN.nc
+  cdo mulc,1000 -yearsum -mul "${raw_dir}/${1}_S3_gpp.nc" "${secs_dir}/${1}_seconds_per_month.nc" "${ann_dir}/${1}_S3_gpp_ANN.nc"
+  cdo mulc,1000 -yearsum -mul "${raw_dir}/${1}_S3_nbp.nc" "${secs_dir}/${1}_seconds_per_month.nc" "${ann_dir}/${1}_S3_nbp_ANN.nc"
 
   ## 2. aggregate to global total (GtC yr-1)
-  cdo mulc,1e-15 -fldsum -mul ${1}_gpp_ANN.nc -gridarea ${1}_gpp_ANN.nc ${1}_gpp_GLOB.nc
-  cdo mulc,1e-15 -fldsum -mul ${1}_nbp_ANN.nc -gridarea ${1}_nbp_ANN.nc ${1}_nbp_GLOB.nc
+  cdo mulc,1e-15 -fldsum -mul "${ann_dir}/${1}_S3_gpp_ANN.nc" -gridarea "${ann_dir}/${1}_S3_gpp_ANN.nc" "${glob_dir}/${1}_S3_gpp_GLOB_ABSOLUTE.nc"
+  cdo mulc,1e-15 -fldsum -mul "${ann_dir}/${1}_S3_nbp_ANN.nc" -gridarea "${ann_dir}/${1}_S3_nbp_ANN.nc" "${glob_dir}/${1}_S3_nbp_GLOB_ABSOLUTE.nc"
 
   ## 3. For GPP, select 30-year period (1982-2011) detrend global time series GtC yr-1). XXX change period to most recent available
-  cdo detrend -selyear,1982/2011 -selname,nbp ${1}_nbp_GLOB.nc ${1}_nbp_DETR_GLOB.nc
-  cdo detrend -selyear,1982/2011 -selname,gpp ${1}_gpp_GLOB.nc ${1}_gpp_DETR_GLOB.nc
+  cdo detrend -selyear,1982/2011 -selname,nbp "${glob_dir}/${1}_S3_nbp_GLOB_ABSOLUTE.nc" "${detr_dir}/${1}_S3_nbp_ANN_GLOB_DETR.nc"
+  cdo detrend -selyear,1982/2011 -selname,gpp "${glob_dir}/${1}_S3_gpp_GLOB_ABSOLUTE.nc" "${detr_dir}/${1}_S3_gpp_ANN_GLOB_DETR.nc"
 
   ## 4. get variance of detrended global total (GtC yr-1)
-  cdo timvar ${1}_nbp_DETR_GLOB.nc ${1}_nbp_VAR_GLOB.nc
-  cdo timvar ${1}_gpp_DETR_GLOB.nc ${1}_gpp_VAR_GLOB.nc
+    cdo timvar "${detr_dir}/${1}_S3_nbp_ANN_GLOB_DETR.nc" "${iasd_dir}/${1}_S3_nbp_VAR_GLOB.nc"
+    cdo timvar "${detr_dir}/${1}_S3_gpp_ANN_GLOB_DETR.nc" "${iasd_dir}/${1}_S3_gpp_VAR_GLOB.nc"
 }
 
 # CABLE-POP
-proc_trendy_single /data_2/scratch/ttrinidad/data/trendy/raw/CABLE-POP_S3
+proc_trendy_single ISBA-CTRIP
 
 # Check outputs with analysis/test_outputs.R
 

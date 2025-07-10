@@ -297,7 +297,7 @@ legend("bottomright", legend = paste("RSQ =", round(summary(mod)$r.squared,2), c
 ggplot(data= iasd_trendy, aes(x= gpp, y= nbp, colour = `R/CDO`, label = model)) +
   geom_point() +
   scale_x_continuous(labels = scales::number_format(accuracy = 0.1)) +
-  geom_text(size = 0.5)
+  geom_text()
 
 
 plot(y = iasd_trendy$nbp[iasd_trendy$`R/CDO`== "R"], x= iasd_trendy$gpp[iasd_trendy$`R/CDO` == "R"], xlab= "GPP", ylab = "NBP", main = "Interannual Variability TRENDYv12 Models")

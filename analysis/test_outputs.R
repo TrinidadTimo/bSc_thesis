@@ -2,10 +2,10 @@ library(terra)
 library(dplyr)
 library(ggplot2)
 
-dirout <- "/data_2/scratch/bstocker/data/trendy/"
+dirout <- "/data_2/scratch/ttrinidad/data/trendy/"
 
 # seconds per month
-filnam <- paste0(dirout, "seconds_per_month.nc")
+filnam <- paste0(dirout, "secs_per_month/CABLE-POP_seconds_per_month.nc")
 rasta <- rast(filnam)
 
 plot(rasta[[1]])
@@ -15,13 +15,13 @@ plot(rasta[[2]])
 28*24*60*60
 
 # annual total -----------------------------------------------------------------
-filnam <- paste0(dirout, "CABLE-POP_S3_gpp_ANN.nc")
+filnam <- paste0(dirout, "ann/R/CABLE-POP_S3_gpp_ANN.nc")
 rasta <- rast(filnam)
 plot(rasta[[1]])
 
 # global total -----------------------------------------------------------------
 ## GPP ---------
-filnam <- paste0(dirout, "CABLE-POP_S3_gpp_GLOB.nc")
+filnam <- paste0(dirout, "ann_glob_absolute/R/CABLE-POP_S3_gpp_GLOB_ABSOLUTE.nc")
 rasta <- rast(filnam)
 
 as.data.frame(rasta) |>

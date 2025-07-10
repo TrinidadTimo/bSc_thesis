@@ -34,7 +34,7 @@ gpp_annual_detr <- aperm(gpp_annual_detr, c(2,3,1))
 
 # spatial aggregation
 ## Area weightening matrix:
-pseudo_raster <- raster::raster(nrows = 150, ncols = 360, xmn = -179.5, xmx = 179.5, ymn = -59.5, ymx = 89.5)
+pseudo_raster <- raster::raster(nrows = 150, ncols = 360, xmn = -179.5, xmx = 179.5, ymn = -59.5, ymx = 89.5) # use terra instead of raster
 area_raster <- (raster::area(pseudo_raster))*1e6 # returning filed areas, connverted from km2 to m2
 area_matrix <- t(matrix(raster::getValues(area_raster), nrow= 150, ncol = 360)) # Need to transpose here as lon, lat are flipped in the pseudo_raster
 area_array <- array(rep(area_matrix, times = dim(gpp_annual_detr)[3]),

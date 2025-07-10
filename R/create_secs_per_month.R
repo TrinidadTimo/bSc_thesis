@@ -1,22 +1,35 @@
+# Discuss with Beni: CARDAMOM
+# length(time(ref)) = 1682
+# cdo sinfo -> time 240 steps, no values on time steps displayed
+# ncdump -h: "monthly time steps of days since 2003-01-01"
+
+# Latest Approach:
+
+
 library(terra)
 library(lubridate)
 
-dirin <- "/data_2/scratch/ttrinidad/data/trendy/raw/"
-dirout <- "/data_2/scratch/bstocker/data/trendy/"
 
-filnam <- paste0(dirin, "CABLE-POP_S3_gpp.nc")
+# get directions
+dirin <- "/data_2/scratch/ttrinidad/data/trendy/raw/"
+dirout <- "/data_2/scratch/ttrinidad/data/trendy/secs_per_month/"
+
+filnam <- paste0(dirin, "ISBA-CTRIP_S3_gpp.nc")
 
 # read monthly file
 ref <- rast(filnam)
+ref
+length(time(ref))
 
-# get time vector from netcdf file
 tvec <- time(ref)
 
+#length_out = 240
+
 # if not available create it yourself
-tvec_clean <- seq(from = ymd("1701-01-01"), by = "month", length.out = length(tvec))
+tvec_clean <- seq(from = ymd("1701-01-01"), by = "month", length.out = length(tvec)) # length.out = length_out
 
 # Compute days per month for each date
-days_per_month <- days_in_month(tvec)
+days_per_month <- days_in_month(tvec_clean) #choose tvec_clean or t_vec depending on validity of time axis (however create both anyways for below)!!
 
 # Convert to seconds
 seconds_per_month <- days_per_month * 86400  # 86400 seconds/day
@@ -32,7 +45,7 @@ names(time_raster) <- paste0("t", seq_along(tvec_clean))
 
 writeCDF(
   time_raster,
-  paste0(dirout, "seconds_per_month.nc"),
+  file.path(dirout,"seconds_per_month.nc"),
   varname = "seconds_per_month",
   overwrite = TRUE
   )
