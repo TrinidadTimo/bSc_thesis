@@ -3,6 +3,7 @@
 library(here)
 library(readr)
 library(dplyr)
+library(ggplot2)
 library(RANSAC)
 
 # Loading TRENDY IAVAR table
@@ -16,8 +17,7 @@ df <- trendy |>
   filter (!(Model %in% c("ISBA-CTRIP"))) |> # ISBA has 0 in both variables.
   bind_rows(cmip)
 
-
-fit_all <- lm(formula= IAVAR_GPP ~ IAVAR_NBP, data= df)
+fit_all <- lm(formula = IAVAR_GPP ~ IAVAR_NBP, data= df)
 summary(fit_all) # -> yields an R^2 of 0.1518
 
 # --- Cook's distance: ---
@@ -50,8 +50,6 @@ upper <- apply(residual_matrix, 1, quantile, probs = 0.975)
 
 outliers_q <- which(res_fit_all < lower | res_fit_all > upper) # -> no outlier
 
-
-
 # --- Robust Regression: ---
 ## Using the RANSAC-model; see
 ### https://developer.nvidia.com/blog/dealing-with-outliers-using-three-robust-linear-regression-models/
@@ -64,8 +62,7 @@ outliers_q <- which(res_fit_all < lower | res_fit_all > upper) # -> no outlier
 residual_range <- upper - lower
 threshold_boot <- mean(residual_range) # Threshold is given as the mean of the 95% intervals of the conditional residual distributions.
 
-
-fit_ransac <- ransac_reg(IAVAR_GPP ~IAVAR_NBP, data= df,n_min= 2, tol = threshold_boot)
+fit_ransac <- ransac_reg(IAVAR_GPP ~ IAVAR_NBP, data = df, n_min = 2, tol = threshold_boot)
 
 nrow(fit_ransac$model) # -> 5 models as outliers excluded
 summary(fit_ransac) # R^2 = 0.5769
@@ -73,8 +70,7 @@ summary(fit_ransac) # R^2 = 0.5769
 df_ransac_fit <- df %>%
   mutate(Inlier = if_else(df$IAVAR_GPP %in% fit_ransac$model$IAVAR_GPP, "Inlier", "Outlier"))
 
-ggplot(data= df_ransac_fit, aes(x= IAVAR_GPP, y= IAVAR_NBP, color= Inlier)) +
+ggplot(data= df_ransac_fit, aes(x = IAVAR_GPP, y =  IAVAR_NBP, color = Inlier)) +
   geom_point()
 
-
-
+plot(fit_ransac)
