@@ -7,20 +7,29 @@ library(glue)        # nice subtitle
 library(scales)      # label formatting
 library(RANSAC)      # for RANSAC regression
 library(ggrepel)     # for adding labels
+library(purrr)
 
 ## Read data -------------------------------------------------------------------
-# Loading TRENDY IAVAR table
+# Loading TRENDY S3
 trendy <- read_delim("data/iavar_trendy.txt", delim = "\t", escape_double = FALSE, col_names = FALSE, trim_ws = TRUE)
 colnames(trendy) <- c("Model", "IAVAR_GPP", "IAVAR_NBP")
 
-# Loading CMIP6 table
+# Loading CMIP6
 cmip <- read_csv("data/iavar_cmip.txt", col_types = cols(IAVAR_GPP = col_number(), IAVAR_NBP = col_number()))
+
+# Loading MsTMIP SG1
+mstmip_sg1 <- read_csv("data/iavar_mstmip_sg1.csv")
+
+# Loading MsTMIP SG3
+mstmip_sg3 <- read_csv("data/iavar_mstmip_sg3.csv")
 
 df <- trendy |>
   filter (!(Model %in% c("ISBA-CTRIP"))) |> # ISBA has 0 in both variables.
   bind_rows(cmip) |>
+  bind_rows(mstmip_sg1) |>
+  bind_rows(mstmip_sg3) |>
   mutate(
-    source = c(rep("TRENDY", 16), rep("CMIP6", 21))
+    source = c(rep("TRENDY, S3", 16), rep("CMIP6, historical", 21), rep("MsTMIP, SG1", 13), rep("MsTMIP, SG3", 12))
   )
 
 ## Bootstrapped robust regression ----------------------------------------------
@@ -37,7 +46,7 @@ boot_preds <- boot_resamples %>%
     model = map(splits, ~ rlm(IAVAR_NBP ~ IAVAR_GPP, data = analysis(.x), maxit = 100)),
     preds = map(model, ~ augment(.x, newdata = grid))
   ) |>
-  unnest(preds) %>%
+  tidyr::unnest(preds) %>%
   dplyr::select(id, IAVAR_GPP, .fitted)
 
 # 5. Summarize predictions: mean + 95% CI

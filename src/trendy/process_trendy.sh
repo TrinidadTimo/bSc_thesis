@@ -30,7 +30,7 @@ proc_trendy_single (){
 }
 
 # CABLE-POP
-proc_trendy_single LPJwsl
+proc_trendy_single LPX-Bern
 
 # Check outputs with analysis/test_outputs.R
 
