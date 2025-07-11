@@ -11,14 +11,16 @@ library(lubridate)
 
 
 # get directions
-dirin <- "/data_2/scratch/ttrinidad/data/trendy/raw/"
-dirout <- "/data_2/scratch/ttrinidad/data/trendy/secs_per_month/"
+dirin <- "/data_2/scratch/ttrinidad/data/trendy/S2/raw/"
+dirout <- "/data_2/scratch/ttrinidad/data/trendy/S2/secs_per_month/"
 
-filnam <- paste0(dirin, "ISBA-CTRIP_S3_gpp.nc")
+filnam <- paste0(dirin, "CLASSIC_S2_gpp.nc")
 
 # read monthly file
 ref <- rast(filnam)
 ref
+#crs(ref) <- "EPSG:4326"
+
 length(time(ref))
 
 tvec <- time(ref)
