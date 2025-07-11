@@ -64,7 +64,6 @@ outliers_q <- which(res_fit_all < lower | res_fit_all > upper) # -> no outlier
 residual_range <- upper - lower
 threshold_boot <- mean(residual_range) # Threshold is given as the mean of the 95% intervals of the conditional residual distributions.
 
-set.seed(123)
 
 fit_ransac <- ransac_reg(IAVAR_GPP ~IAVAR_NBP, data= df,n_min= 2, tol = threshold_boot)
 
@@ -74,7 +73,7 @@ summary(fit_ransac) # R^2 = 0.5769
 df_ransac_fit <- df %>%
   mutate(Inlier = if_else(df$IAVAR_GPP %in% fit_ransac$model$IAVAR_GPP, "Inlier", "Outlier"))
 
-ggplot(data= df_ransac_fit, aes(x= IAVAR_NBP, y= IAVAR_GPP, color= Inlier)) +
+ggplot(data= df_ransac_fit, aes(x= IAVAR_GPP, y= IAVAR_NBP, color= Inlier)) +
   geom_point()
 
 
