@@ -68,7 +68,7 @@ nrow(fit_ransac$model) # -> 5 models as outliers excluded
 summary(fit_ransac) # R^2 = 0.5769
 
 df_ransac_fit <- df %>%
-  mutate(Inlier = if_else(rownames(df) %in% rownames(fit_ransac$model), "Inlier", "Outlier"))
+  mutate(Inlier = if_else(df$IAVAR_GPP %in% fit_ransac$model$IAVAR_GPP, "Inlier", "Outlier"))
 
 ggplot(data= df_ransac_fit, aes(x = IAVAR_GPP, y =  IAVAR_NBP, color = Inlier)) +
   geom_point()
