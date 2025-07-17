@@ -30,7 +30,7 @@ proc_trendy_single (){
 }
 
 # CABLE-POP
-proc_trendy_single LPX-Bern
+proc_trendy_single CARDAMOM
 
 # Check outputs with analysis/test_outputs.R
 
