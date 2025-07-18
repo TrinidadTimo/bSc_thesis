@@ -1,9 +1,9 @@
 ### Workflow: 
 - Rohdaten von TRENDY-, CMIP-, FLUXCOM-, P.-Modellen - , die aufgrund der umfangreichen Dateigrössen hier nicht verfügbar sind (intern: "data_2/scratch/ttrinidad/data/") - wurden mit den entsprechenden Skripts in \src temporal und räumlich aggregiert und detrendet. 
-	> Folgende "Zwischenprodukte" sind ebenfalls lokal verfügbar: 
-		- Annual Totals
-		- Global Annual Totals
-		- Detrended Global Annual Totals
+- Neben den Rohdaten sind folgende "Zwischenprodukte" ebenfalls lokal verfügbar:
+  - Annual Totals
+  - Global Annual Totals
+  - Detrended Global Annual Totals
 
 - IAV Detrended Global Annual Totals liegen für die genannten Modellreihen als csv/txt in \data vor. 
 - Für MsTMIP-Modelle konnte auf bereits aggregierte Outputs zurückgegriffen werden. IAV Detrended Global Annual Totals sind in \data abgelegt. 
