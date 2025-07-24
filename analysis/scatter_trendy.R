@@ -72,7 +72,7 @@ ggplot() +
               alpha = 0.2
   ) +
   geom_point(data= trendy, aes(x= IAVAR_GPP, y= IAVAR_NBP), shape= 3, color= "red") +
-  geom_line(data = pred_summary, aes(x = IAVAR_GPP, y = y_mean, color = "Bootstrapped robust regression (median)"), size = 0.75) +
+  geom_line(data = pred_summary_trendy, aes(x = IAVAR_GPP, y = y_mean, color = "Bootstrapped robust regression (median)"), size = 0.75) +
   geom_text_repel(data= trendy, aes(x= IAVAR_GPP, y= IAVAR_NBP, label= Model), size = 2.5, max.overlaps = 20, color= "darkgrey") +
   scale_color_manual(
     name = NULL,
@@ -94,8 +94,7 @@ ggplot() +
     legend.box.background = element_blank(),
     panel.border = element_rect(color = "black", fill = NA, size = 0.8)) +
   scale_x_continuous(labels = label_number(accuracy = 0.1), breaks= seq(from= 0, to= 9, by= 1.5), limits= c(0,6.75)) +
-  scale_y_continuous(labels = label_number(accuracy = 0.1), breaks= seq(from= 0, to= 9, by= 1.5), limits= c(0, 6.75) ) +
+  scale_y_continuous(labels = label_number(accuracy = 0.1), breaks= seq(from= 0, to= 9, by= 1.5), limits= c(0, 6) ) +
   coord_fixed(ratio= 1)
-
 
 
