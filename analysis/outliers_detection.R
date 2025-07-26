@@ -70,7 +70,8 @@ summary(fit_ransac) # R^2 = 0.5769
 df_ransac_fit <- df %>%
   mutate(Inlier = if_else(df$IAVAR_GPP %in% fit_ransac$model$IAVAR_GPP, "Inlier", "Outlier"))
 
-ggplot(data= df_ransac_fit, aes(x = IAVAR_GPP, y =  IAVAR_NBP, color = Inlier)) +
-  geom_point()
+ggplot(data= df_ransac_fit, aes(x = IAVAR_GPP, y =  IAVAR_NBP, color = Inlier, label= Model)) +
+  geom_point() +
+  geom_text_repel(aes(label = Model))
 
 plot(fit_ransac)

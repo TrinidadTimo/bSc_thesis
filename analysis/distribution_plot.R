@@ -36,7 +36,7 @@ for(i in 1:2) {
                  alpha = 0.3,
                  coef= 0,
                  outlier.shape= NA,
-                 size= 0.3)+
+                 size= 0.3) +
     labs(x= expression(GPP~(PgC~yr^{-1})),
          y= "Density") +
     theme_bw() +
@@ -365,7 +365,7 @@ df_mstmip_sg3_nbp_long <- df_mstmip_sg3_nbp |>
                names_to = "Model",
                values_to = "NBP")
 
-for(i in 1) {
+for(i in 2) {
   p_mstmip_sg3_nbp <- df_mstmip_sg3_nbp_long |>
     ggplot(mapping= aes(x= NBP, y= ..density..)) +
     geom_histogram(color= "lightgrey",fill= "blue", binwidth = 1, size= 0.2) +
@@ -393,23 +393,23 @@ for(i in 1) {
 
 GPP-Models
 ## P-Model
-pMod_gpp_glob <- read_table(here("data/pMod_gpp_glob.txt"), col_names= c("Year", "GPP"), skip = 1)
+pMod_gpp_glob <- read_table(here("data/pMod_gpp_glob.txt"), col_names= c("Year", "P-Model"), skip = 1)
 
 
 ## FLUXCOM
-fluxcom_gpp_glob <- read_table(here("data/fluxcom_gpp_glob.txt"), col_names= c("Year", "GPP"), skip = 1)
+fluxcom_gpp_glob <- read_table(here("data/fluxcom_gpp_glob.txt"), col_names= c("Year", "Fluxcom"), skip = 1)
 
 
+df_gpp <- pMod_gpp_glob %>% mutate("Fluxcom" = fluxcom_gpp_glob$Fluxcom)
 
-Steps:
+df_gpp_long<- df_gpp |>
+  pivot_longer(cols= -Year,
+               names_to = "Model",
+               values_to = "GPP")
 
-  1. Create shared table df
-  2. create Column Model
-  3. do gpp Plot
-# ............................
 
 for(i in 1) {
-  p_pMod_gpp_glob <- pMod_gpp_glob |>
+  p_pMod_fluxcom_gpp_glob <- df_gpp_long |>
     ggplot(mapping= aes(x= GPP, y= ..density..)) +
     geom_histogram(color= "lightgrey",fill= "darkgreen", binwidth = 1, size= 0.2) +
     geom_boxplot(aes(y = -0.02),
@@ -429,6 +429,6 @@ for(i in 1) {
       strip.text = element_text(face = "bold")
     ) +
     facet_wrap_paginate(~Model, ncol= 3, nrow= 3, page= i)
-  ggsave(sprintf(here("figures/distribution_pMod_gpp_%01d.png"), i), plot = pMod_gpp_glob, width = 8.27, height = 11.69, units= "in", dpi = 300)
+  ggsave(sprintf(here("figures/distribution_pMod_fluxcom_gpp_%01d.png"), i), plot = p_pMod_fluxcom_gpp_glob, width = 8.27, height = 11.69, units= "in", dpi = 300)
 
 }
