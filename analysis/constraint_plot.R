@@ -8,7 +8,7 @@ library(ggrepel)     # for adding labels
 
 ## Read data -------------------------------------------------------------------
 # Loading TRENDY S3
-trendy <- read_delim(here("data/iavar_trendy.txt"), delim = "\t", escape_double = FALSE, col_names = FALSE, trim_ws = TRUE)
+trendy <- read_table(here("data/iavar_trendy.txt"), col_names = FALSE)
 colnames(trendy) <- c("Model", "IAVAR_GPP", "IAVAR_NBP")
 
 # Loading CMIP6
@@ -26,7 +26,7 @@ df <- trendy %>%
   bind_rows(mstmip_sg1) %>%
   bind_rows(mstmip_sg3) %>%
   mutate(
-    source = c(rep("TRENDY, S3", 16), rep("CMIP6, historical", 21), rep("MsTMIP, SG1", 13), rep("MsTMIP, SG3", 12)))
+    source = c(rep("TRENDY, S3", 17), rep("CMIP6, historical", 21), rep("MsTMIP, SG1", 13), rep("MsTMIP, SG3", 12)))
 
 # Loading fluxcom
 fluxcom <- read_delim(here("data/iavar_fluxcom.txt"), delim = ";", escape_double = FALSE, trim_ws = TRUE) %>%
@@ -46,11 +46,13 @@ df_lines <- fluxcom %>% bind_rows(pMod, gcb_sLand)
 
 ## Bootstrapped robust regression ----------------------------------------------
 # 2. Create prediction grid
-grid <- tibble(IAVAR_GPP = seq(min(df$IAVAR_GPP), max(df$IAVAR_GPP), length.out = 100))
+df_filtered <- df %>% filter(source != "MsTMIP, SG1") #exclude SG1
+
+grid <- tibble(IAVAR_GPP = seq(min(df_filtered$IAVAR_GPP), max(df_filtered$IAVAR_GPP), length.out = 100))
 
 # 3. Create bootstrap resamples using rsample
 n_boot <- 1000
-boot_resamples <- bootstraps(df, times = n_boot)
+boot_resamples <-bootstraps(df_filtered, times = n_boot)
 
 # 4. Bootstrap Robust Regression (Huber)
 boot_preds <- boot_resamples %>%
@@ -95,7 +97,7 @@ p_constraint <- ggplot() +
   geom_hline(yintercept= gcb_sLand$IAVAR_NBP, color= "coral2", size= 0.75, show.legend = FALSE) +
   geom_point(
     data = df,
-    aes(x= IAVAR_GPP, y= IAVAR_NBP, shape = group, color = group),
+    aes(x= IAVAR_GPP, y= IAVAR_NBP, shape = source, color = source),
     alpha = 0.7, size= 2
   ) +
   geom_vline(data= fluxcom, aes(xintercept= IAVAR_GPP), size= 0.75, linetype= "dashed", color= "cadetblue3") +
@@ -109,7 +111,7 @@ p_constraint <- ggplot() +
     legend.justification = c("right", "bottom"),
     legend.background = element_blank(),
     legend.box.background = element_blank(),
-    legend.text = element_text(size = 12),
+    legend.text = element_text(size = 13),
     legend.title = element_text(size = 10),
     panel.border = element_rect(color = "black", fill = NA, size = 0.8)) +
   labs(
