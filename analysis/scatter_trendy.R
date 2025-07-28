@@ -11,6 +11,8 @@ library(ggrepel)
 trendy <- read_table("data/iavar_trendy.txt",col_names = FALSE)
 colnames(trendy) <- c("Model", "IAVAR_GPP", "IAVAR_NBP")
 
+trendy <- trendy %>% filter(Model != "ISBA-CTRIP") # Shows values of 0 in both variables -> unresolved problems in preprocessing.
+
 ## Bootstrapped robust regression ----------------------------------------------
 # 2. Create prediction grid
 grid <- tibble(IAVAR_GPP = seq(min(trendy$IAVAR_GPP), max(trendy$IAVAR_GPP), length.out = 100))
@@ -50,12 +52,12 @@ p_trendy <-ggplot() +
               alpha = 0.2
   ) +
   geom_point(data= trendy, aes(x= IAVAR_GPP, y= IAVAR_NBP), shape= 3, color= "red") +
-  geom_line(data = pred_summary, aes(x = IAVAR_GPP, y = y_mean, color = "Bootstrapped robust regression mean (slope = 0.30)"), size = 0.75) +
+  geom_line(data = pred_summary, aes(x = IAVAR_GPP, y = y_mean, color = "Bootstrapped robust regression mean (slope = 0.31)"), size = 0.75) +
   geom_text_repel(data= trendy, aes(x= IAVAR_GPP, y= IAVAR_NBP, label= Model), size = 2.5, max.overlaps = 20, color= "darkgrey") +
   scale_color_manual(
     name = NULL,
     values = c(
-      "Bootstrapped robust regression mean (slope = 0.30)" = "cornflowerblue")
+      "Bootstrapped robust regression mean (slope = 0.31)" = "cornflowerblue")
   ) +
   labs(
     y = expression(IAV[NBP] ~(PgC~yr^{-1})),
