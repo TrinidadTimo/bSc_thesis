@@ -73,7 +73,10 @@ pred_summary <- boot_preds %>%
     .groups = "drop"
   )
 
-
+# Slope mean:
+s <- (pred_summary$y_mean[2] - pred_summary$y_mean[1])/(pred_summary$IAVAR_GPP[2] - pred_summary$IAVAR_GPP[1])
+# intercept:
+i <- pred_summary$y_mean[1]
 
 
 # Plot
@@ -93,7 +96,7 @@ p_constraint <- ggplot() +
     alpha = 0.2
   ) +
   ## bootstrapped distribution mean:
-  geom_line(data = pred_summary, aes(x = IAVAR_GPP, y = y_mean, linetype = "Bootstrapped robust \nregression (median)"), size = 0.75, color= "cornflowerblue") +
+  geom_line(data = pred_summary, aes(x = IAVAR_GPP, y = y_mean, linetype = "Bootstrapped robust regression, \nMedian (slope = 0.35)"), size = 0.75, color= "cornflowerblue") +
   geom_hline(yintercept= gcb_sLand$IAVAR_NBP, color= "coral2", size= 0.75, show.legend = FALSE) +
   geom_point(
     data = df,
@@ -107,7 +110,7 @@ p_constraint <- ggplot() +
     panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
     panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
     panel.background= element_rect(fill = "white"),
-    legend.position = c(0.37, 0.78),
+    legend.position = c(0.49, 0.78),
     legend.justification = c("right", "bottom"),
     legend.background = element_blank(),
     legend.box.background = element_blank(),
@@ -130,7 +133,7 @@ p_constraint <- ggplot() +
   scale_linetype_manual(
     name = NULL,
     values = c(
-      "Bootstrapped robust \nregression (median)" = "solid"
+      "Bootstrapped robust regression, \nMedian (slope = 0.35)" = "solid"
     )) +
   scale_shape_manual(
     name = NULL,
