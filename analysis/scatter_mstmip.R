@@ -59,7 +59,7 @@ i_sg1 <- pred_summary_sg1$y_mean[1]
 
 
 
-## SG1:
+## SG3:
 # Create prediction grid
 grid <- tibble(IAVAR_GPP = seq(min(mstmip_sg3$IAVAR_GPP), max(mstmip_sg3$IAVAR_GPP), length.out = 100))
 
