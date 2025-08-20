@@ -1,7 +1,9 @@
 #!/bin/bash
 
+cd "../../../data/rs_models/FLUXCOM/GPP/ENS/"
+
 # Ordner und Dateien
-INPUT_FILE="../../data/rs_models/FLUXCOM/GPP/ENS/timeAxis_fixed/GPP.ENS.CRUNCEPv6.annual.1980_2013.lonlat.nc"
+INPUT_FILE="timeAxis_fixed/GPP.ENS.CRUNCEPv6.annual.1980_2013.lonlat.nc"
 
 # 1) Calculateing grid area
 echo "Computing grid area"
@@ -28,5 +30,8 @@ echo "Detrending"
 cdo detrend "processed/GPP.ENS.CRUNCEPv6.annual.1980_2013.ann_glob_pgC.nc" "processed/GPP.ENS.CRUNCEPv6.annual.1980_2013.ann_glob_pgC_detr.nc"
 
 # 7) Selecting analysis periode and getting IAV:
-cdo timvar -seldate,1992-01-01,2012-12-31 "processed/GPP.ENS.CRUNCEPv6.annual.1980_2013.ann_glob_pgC_detr.nc" "processed/IAV.1982_2011.nc"
+cdo timvar -seldate,1982-01-01,2011-12-31 "processed/GPP.ENS.CRUNCEPv6.annual.1980_2013.ann_glob_pgC_detr.nc" "processed/IAV.1982_2011.nc"
 echo "Finished!"
+
+# 8) Getting Coefficient of Variation (detrended variance divided by mean of global absolute values)
+cdo div "processed/IAV.1982_2011.nc" -timmean -seldate,1982-01-01,2011-12-31 "processed/GPP.ENS.CRUNCEPv6.annual.1980_2013.ann_glob_pgC.nc" "processed/GPP.ENS.CRUNCEPv6.annual.1982_2011.var_coef.nc"
