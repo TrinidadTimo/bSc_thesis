@@ -26,4 +26,8 @@ cdo detrend "ann_glob/${BASENAME}.${VARNAME}_ann_glob.nc" "ann_glob_detr/${BASEN
 cdo timvar -selyear,1982/2011 "ann_glob_detr/${BASENAME}.${VARNAME}_ann_glob_detr.nc" "IAVAR/${BASENAME}.${VARNAME}_IAVAR.nc"
 
 
+# Coefficient of Variation
+cdo div "IAVAR/${BASENAME}.${VARNAME}_IAVAR.nc" -timmean "ann_glob/${BASENAME}.${VARNAME}_ann_glob.nc" "var_coef/${BASENAME}.${VARNAME}_var_coef.nc"
+
+
 rm temp_*.nc cellarea.nc
