@@ -10,6 +10,7 @@ proc_trendy_single (){
   glob_dir="/data_2/scratch/ttrinidad/data/trendy/S3/ann_glob_absolute"
   detr_dir="/data_2/scratch/ttrinidad/data/trendy/S3/ann_glob_detr"
   iavar_dir="/data_2/scratch/ttrinidad/data/trendy/S3/iavar"
+  varCoef_dir="/data_2/scratch/ttrinidad/data/trendy/S3/var_coef"
 
   ## 1. get annual total (gC m-2 yr-1)
   ## This requires seconds per month to be calculated beforehand, using R/create_secs_per_month.R
@@ -27,6 +28,10 @@ proc_trendy_single (){
   ## 4. get variance of detrended global total (GtC yr-1)
     cdo timvar "${detr_dir}/${1}_S3_nbp_ANN_GLOB_DETR.nc" "${iavar_dir}/${1}_S3_nbp_VAR_GLOB.nc"
     cdo timvar "${detr_dir}/${1}_S3_gpp_ANN_GLOB_DETR.nc" "${iavar_dir}/${1}_S3_gpp_VAR_GLOB.nc"
+
+  ## 5. get coefficient of variation (detrended variance divided by mean of absolute global total[of gpp])
+    cdo div "${iavar_dir}/${1}_S3_gpp_VAR_GLOB.nc" -timmean "${glob_dir}/${1}_S3_gpp_GLOB_ABSOLUTE.nc" "${varCoef_dir}/${1}_S3_gpp_var_coef.nc"
+    cdo div "${iavar_dir}/${1}_S3_nbp_VAR_GLOB.nc" -timmean "${glob_dir}/${1}_S3_gpp_GLOB_ABSOLUTE.nc" "${varCoef_dir}/${1}_S3_nbp_var_coef.nc" # dividing by gpp as mean of nbp should be aroung 0.
 }
 
 # LPJ-GUESS
