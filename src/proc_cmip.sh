@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Assuming given folder structure:
-# ann/, ann_glob/, ann_glob_detr/
+# ann/, ann_glob/, ann_glob_detr, IAVAR/, var_coef
 
+cd ../../data/CMIP6
 
 for VAR in gpp nbp; do
   for FILE in ../../data/CMIP6/raw/${VAR}_*.nc; do
@@ -35,6 +36,10 @@ for VAR in gpp nbp; do
 
     # 8) Getting IAVAR
     cdo timvar "ann_glob_detr/${MODEL}_${VAR}_ann_glob_detr.nc" "IAVAR/${MODEL}_${VAR}_ann_glob_detr_iavar.nc"
+
+    # 9) Getting Coefficient of Variation
+    cdo div "IAVAR/${MODEL}_gpp_ann_glob_detr_iavar.nc" -timmean "ann_glob/${MODEL}_gpp_ann_glob.nc" "var_coef/${MODEL}_gpp_var_coef.nc"
+    cdo div "IAVAR/${MODEL}_nbp_ann_glob_detr_iavar.nc" -timmean "ann_glob/${MODEL}_gpp_ann_glob.nc" "var_coef/${MODEL}_nbp_var_coef.nc"
 
     # Cleaning up
     rm tmp_*.nc
