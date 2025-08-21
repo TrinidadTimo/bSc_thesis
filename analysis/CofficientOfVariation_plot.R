@@ -49,12 +49,13 @@ p_trendy_gpp <- ggplot(data= trendy_gpp, aes(x= Value)) +
     panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
     panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
     panel.background= element_rect(fill = "white"),
-    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)) +
   labs(
     y = "Density",
     x = expression(~PgC~yr^{-1})
   )
 
+ggsave(here("figures/coefVar_trendy_gpp.png"), plot= p_trendy_gpp,width = 14, height = 10, dpi = 300)
 
 ### NBP:
 
@@ -65,16 +66,19 @@ k <- nclass.Sturges(x)
 bw <- diff(range(x, na.rm = TRUE)) / k
 
 p_trendy_nbp <- ggplot(data= trendy_nbp, aes(x= Value)) +
-  geom_histogram(aes(y= after_stat(count / sum(count))), binwidth= bw, fill = "deepskyblue3", color = "black") +
+  geom_histogram(aes(y= after_stat(count / sum(count))), binwidth= bw, fill = "deepskyblue4", color = "black") +
   theme(
     panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
     panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
     panel.background= element_rect(fill = "white"),
-    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)) +
   labs(
     y = "Density",
     x = expression(~PgC~yr^{-1})
   )
+
+ggsave(here("figures/coefVar_trendy_nbp.png"), plot= p_trendy_nbp,width = 14, height = 10, dpi = 300)
+
 
 
 
@@ -108,7 +112,7 @@ for (i in 1:length(files_cmip_nbp)){
 
 write_csv(cmip_nbp, here("data/coefVar_cmip_nbp.csv"))
 
-## Plotting Histograms and Density Distributions
+## Plotting Histograms
 ### GPP:
 #### Calculating the optimal binwidth based on Sturge's method:
 x <- cmip_gpp$Value
@@ -122,12 +126,13 @@ p_cmip_gpp <- ggplot(data= cmip_gpp, aes(x= Value)) +
     panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
     panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
     panel.background= element_rect(fill = "white"),
-    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)) +
   labs(
     y = "Density",
     x = expression(~PgC~yr^{-1})
   )
 
+ggsave(here("figures/coefVar_cmip_gpp.png"), plot= p_cmip_gpp,width = 14, height = 10, dpi = 300)
 
 ### NBP:
 
@@ -143,10 +148,117 @@ p_cmip_nbp <- ggplot(data= cmip_nbp, aes(x= Value)) +
     panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
     panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
     panel.background= element_rect(fill = "white"),
-    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)) +
   labs(
     y = "Density",
     x = expression(~PgC~yr^{-1})
   )
 
+ggsave(here("figures/coefVar_cmip_nbp.png"), plot= p_cmip_nbp,width = 14, height = 10, dpi = 300)
+
+
+
+
+
+### MsTMIP SG1 -------------------------------------------------------------------
+# Load Data
+mstmip_sg1_gpp <- read_csv("data/coefVar_mstmip_sg1_gpp.txt")
+mstmip_sg1_nbp <- read_csv("data/coefVar_mstmip_sg1_nbp.txt")
+
+
+## Plotting Histograms
+### GPP:
+#### Calculating the optimal binwidth based on Sturge's method:
+x <- mstmip_sg1_gpp$Value
+
+k <- nclass.Sturges(x)
+bw <- diff(range(x, na.rm = TRUE)) / k
+
+p_mstmip_sg1_gpp <- ggplot(data= mstmip_sg1_gpp, aes(x= Value)) +
+  geom_histogram(aes(y= after_stat(count / sum(count))), binwidth = bw, fill = "darkseagreen4", color = "black") +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)) +
+  labs(
+    y = "Density",
+    x = expression(~PgC~yr^{-1})
+  )
+
+ggsave(here("figures/coefVar_mstmip_sg1_gpp.png"), plot= p_mstmip_sg1_gpp,width = 14, height = 10, dpi = 300)
+
+### NBP:
+
+#### Calculating the optimal binwidth based on Sturge's method:
+x <- mstmip_sg1_nbp$Value
+
+k <- nclass.Sturges(x)
+bw <- diff(range(x, na.rm = TRUE)) / k
+
+p_mstmip_sg1_nbp <- ggplot(data= mstmip_sg1_nbp, aes(x= Value)) +
+  geom_histogram(aes(y= after_stat(count / sum(count))), binwidth= bw, fill = "deepskyblue4", color = "black") +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)) +
+  labs(
+    y = "Density",
+    x = expression(~PgC~yr^{-1})
+  )
+
+ggsave(here("figures/coefVar_mstmip_sg1_nbp.png"), plot= p_mstmip_sg1_nbp,width = 14, height = 10, dpi = 300)
+
+
+
+### MsTMIP SG3 -------------------------------------------------------------------
+# Load Data
+mstmip_sg3_gpp <- read_csv("data/coefVar_mstmip_sg3_gpp.txt")
+mstmip_sg3_nbp <- read_csv("data/coefVar_mstmip_sg3_nbp.txt")
+
+
+## Plotting Histograms
+### GPP:
+#### Calculating the optimal binwidth based on Sturge's method:
+x <- mstmip_sg3_gpp$Value
+
+k <- nclass.Sturges(x)
+bw <- diff(range(x, na.rm = TRUE)) / k
+
+p_mstmip_sg3_gpp <- ggplot(data= mstmip_sg3_gpp, aes(x= Value)) +
+  geom_histogram(aes(y= after_stat(count / sum(count))), binwidth = bw, fill = "darkseagreen4", color = "black") +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)) +
+  labs(
+    y = "Density",
+    x = expression(~PgC~yr^{-1})
+  )
+
+ggsave(here("figures/coefVar_mstmip_sg3_gpp.png"), plot= p_mstmip_sg3_gpp,width = 14, height = 10, dpi = 300)
+
+### NBP:
+
+#### Calculating the optimal binwidth based on Sturge's method:
+x <- mstmip_sg3_nbp$Value
+
+k <- nclass.Sturges(x)
+bw <- diff(range(x, na.rm = TRUE)) / k
+
+p_mstmip_sg3_nbp <- ggplot(data= mstmip_sg3_nbp, aes(x= Value)) +
+  geom_histogram(aes(y= after_stat(count / sum(count))), binwidth= bw, fill = "deepskyblue4", color = "black") +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)) +
+  labs(
+    y = "Density",
+    x = expression(~PgC~yr^{-1})
+  )
+
+ggsave(here("figures/coefVar_mstmip_sg3_nbp.png"), plot= p_mstmip_sg3_nbp,width = 14, height = 10, dpi = 300)
 
