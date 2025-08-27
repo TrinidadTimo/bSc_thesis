@@ -137,7 +137,10 @@ p_mstmip <- ggplot() +
   scale_y_continuous(labels = label_number(accuracy = 0.1), breaks= seq(from= 0, to= 9, by= 1.5), limits= c(0, 3) ) +
   coord_fixed(ratio= 1)
 
+# Save as R data to use in other scripts
+saveRDS(p_mstmip, file = "data/scatter_mstmip.rds")
 
+# Save image:
 ggsave(here("figures/scatter_mstmip.png"), plot= p_mstmip,width = 14, height = 10, dpi = 300)
 
 

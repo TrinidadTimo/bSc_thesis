@@ -74,5 +74,9 @@ p_cmip <-ggplot() +
   coord_fixed(ratio= 1)
 
 
+# Save as R data to use in other scripts
+saveRDS(p_cmip, file = "data/scatter_cmip.rds")
+
+# Save image:
 ggsave(here("figures/scatter_cmip.png"), plot= p_cmip,width = 14, height = 10, dpi = 300)
 

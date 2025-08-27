@@ -77,7 +77,10 @@ p_trendy <-ggplot() +
   scale_y_continuous(labels = label_number(accuracy = 0.1), breaks= seq(from= 0, to= 9, by= 1.5), limits= c(-0.75, 5.25) ) +
   coord_fixed(ratio= 1)
 
+# Save as R data to use in other scripts
+saveRDS(p_trendy, file = "data/scatter_trendy.rds")
 
+# Save image:
 ggsave(here("figures/scatter_trendy.png"), plot= p_trendy,width = 14, height = 10, dpi = 300)
 
 
