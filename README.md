@@ -1,4 +1,4 @@
-Dieses Repositorium stellt die Daten-Files und Prozess-Skripts meiner Bachelor-Arbeit zur Verfügung. Es folgt der folgenden inhaltlichen Organisationsstruktur: 
+Dieses Repositorium stellt die Daten-Files und Prozess-Skripts meiner Bachelorarbeit zur Verfügung. Es folgt der folgenden inhaltlichen Organisationsstruktur: 
 
 - Rohdaten von TRENDY-, CMIP-, FLUXCOM-, P.-Modellen - , die aufgrund der umfangreichen Dateigrössen hier nicht verfügbar sind (intern: "data_2/scratch/ttrinidad/data/") - wurden mit den entsprechenden Bash-Skripts im Ordner "/src" vorprozessiert (temporal und räumlich aggregiert und detrendet). Neben den Rohdaten sind folgende "Zwischenprodukte" ebenfalls lokal verfügbar:
   - Annual Totals
