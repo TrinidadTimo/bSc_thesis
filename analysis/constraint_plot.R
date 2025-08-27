@@ -155,4 +155,9 @@ p_constraint <- ggplot() +
   scale_x_continuous(labels = label_number(accuracy = 0.1), breaks= seq(from= 0, to= 15, by= 1.5)) +
   scale_y_continuous(labels = label_number(accuracy = 0.1), breaks= seq(from= 0, to= 9, by= 1.5) )
 
+# Save as R data to use in other scripts:
+saveRDS(p_constraint, file = here("data/constraint_plot.rds"))
+
+
+# Save as Image:
 ggsave(here("figures/emergent_constraint.png"), plot= p_constraint,width = 14, height = 10, dpi = 300)
