@@ -157,9 +157,6 @@ p_cmip_nbp <- ggplot(data= cmip_nbp, aes(x= Value)) +
 ggsave(here("figures/coefVar_cmip_nbp.png"), plot= p_cmip_nbp,width = 14, height = 10, dpi = 300)
 
 
-
-
-
 ### MsTMIP SG1 -------------------------------------------------------------------
 # Load Data
 mstmip_sg1_gpp <- read_csv("data/coefVar_mstmip_sg1_gpp.txt")
@@ -261,4 +258,10 @@ p_mstmip_sg3_nbp <- ggplot(data= mstmip_sg3_nbp, aes(x= Value)) +
   )
 
 ggsave(here("figures/coefVar_mstmip_sg3_nbp.png"), plot= p_mstmip_sg3_nbp,width = 14, height = 10, dpi = 300)
+
+
+# ------------------------------------------------------------------------------------------------------------------
+### Save all Plots as R objects to have them available for other scripts
+save(p_trendy_gpp, p_trendy_nbp, p_cmip_gpp, p_cmip_nbp, p_mstmip_sg1_gpp, p_mstmip_sg1_nbp, p_mstmip_sg3_gpp, p_mstmip_sg3_nbp,
+     file = here("data/coefficientOfVariation_plots.RData"))
 
