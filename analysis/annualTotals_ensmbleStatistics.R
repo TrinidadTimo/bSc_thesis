@@ -166,8 +166,7 @@ df_analysis_data_gpp$`MsTMIP SG1`[3] <- summary(lm(IQR ~year, data= sum_stat_mst
 df_analysis_data_gpp$`MsTMIP SG1`[4] <- summary(lm(IQR ~year, data= sum_stat_mstmip_sg1_gpp))$coefficient[2,4]
 
 
-plot(IQR ~ year, data= sum_stat_mstmip_sg1_gpp, type= "l")
-abline(lm(IQR ~year, data= sum_stat_mstmip_sg1_gpp))
+
 
 
 # NBP:
@@ -199,8 +198,6 @@ df_analysis_data_nbp$`MsTMIP SG1`[3] <- summary(lm(IQR ~year, data= sum_stat_mst
 df_analysis_data_nbp$`MsTMIP SG1`[4] <- summary(lm(IQR ~year, data= sum_stat_mstmip_sg1_nbp))$coefficient[2,4]
 
 
-plot(IQR ~ year, data= sum_stat_mstmip_sg1_nbp, type= "l")
-abline(lm(IQR ~year, data= sum_stat_mstmip_sg1_nbp))
 
 ### MsTMIP SG3 ---------------------------------------------
 ## GPP
