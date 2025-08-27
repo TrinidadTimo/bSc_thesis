@@ -5,6 +5,7 @@ library(dplyr)
 library(here)
 library(ggrepel)
 library(scales)
+library(viridisLite)
 
 
 ### TRENDY -------------------------------------------------------------------
@@ -66,11 +67,11 @@ sum_stat_trendy_gpp <- trendy_gpp_long %>%
 #---
 p_trendy_gpp <- ggplot() +
   geom_point(data = last_pts_trendy_gpp, aes(x= year, y= GPP, color = Model), size = 0.5) +
-  scale_color_grey(start = 0.2, end = 0.5) +
+  scale_color_viridis_d("D") +
   ggrepel::geom_text_repel(
     data = last_pts_trendy_gpp,
     aes(x= year, y= GPP, label = Model, color = Model),
-    direction = "y", hjust = -0.3, nudge_x = 0.5, segment.size = 0.2, size = 3,
+    direction = "y", hjust = -0.7, nudge_x = 0.5, segment.size = 0.4, size = 2.5,
     min.segment.length = 0) +
   geom_ribbon(data = sum_stat_trendy_gpp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.15) +
   geom_line(data = trendy_gpp_long, aes(x= year, y=  GPP, group = Model, color = Model)) +
@@ -85,11 +86,11 @@ p_trendy_gpp <- ggplot() +
     y = expression(~PgC~yr^{-1}),
     x = "Year"
   ) +
-  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2015, by= 5),
+  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2017, by= 5),
                      expand = c(0,0)) +
   scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= 75, to= 200, by= 25),
                      expand = c(0,0)) +
-  coord_cartesian(xlim = c(1979, 2014), ylim = c(70, 215), clip = "off")
+  coord_cartesian(xlim = c(1979, 2017), ylim = c(70, 215), clip = "off")
 
 ggsave(here("figures/annualTotals_trendy_gpp.png"), plot= p_trendy_gpp,width = 14, height = 10, dpi = 300)
 
@@ -107,42 +108,26 @@ sum_stat_trendy_nbp <- trendy_nbp_long %>%
             med = median(NBP, na.rm = TRUE),
             p75 = quantile(NBP, .75, na.rm = TRUE), .groups = "drop")
 
-# Color  mapping:
-grau_palette <- grey_pal()(length(unique(trendy_nbp_long$Model)) - 3)
-
-highlight_colors <- c(
-  "JULES" = "firebrick",
-  "CLASSIC"  = "darkorange",
-  "E3SM" = "darkgreen"
-)
-
-# Alle Modelle als Levels
-all_models <- unique(trendy_nbp_long$Model)
-
-# Farben-Mapping: Highlights bunt, Rest Grautöne
-color_map <- c(highlight_colors,
-               setNames(grau_palette, setdiff(all_models, names(highlight_colors))))
-
 #---
 p_trendy_nbp <- ggplot() +
   geom_point(data = last_pts_trendy_nbp, aes(x= year, y= NBP, color = Model), size = 0.5) +
+  scale_color_viridis_d("D") +
   ggrepel::geom_text_repel(
     data = last_pts_trendy_nbp,
     aes(x= year, y= NBP, label = Model, color = Model),
-    direction = "y", hjust = -0.3, nudge_x = 0.5, segment.size = 0.2, size = 3,
+    direction = "y", hjust = -0.7, nudge_x = 0.5, segment.size = 0.4, size = 2.5,
     min.segment.length = 0) +
   geom_hline(yintercept= 0, color= "black", size= 0.1) +
-  geom_ribbon(data = sum_stat_trendy_nbp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.25) +
-  geom_line(data = trendy_nbp_long, aes(x= year, y=  NBP, group = Model, color = Model), alpha = 0.7) +
-  geom_line(data = sum_stat_trendy_nbp, aes(x= year, y= med), color= "blue", size= 0.8) +
-  geom_line(data = gcb_sland, aes(x= Year, y= NBP_obs), color = "red", size = 0.8) +
+  geom_ribbon(data = sum_stat_trendy_nbp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.35) +
+  geom_line(data = trendy_nbp_long, aes(x= year, y=  NBP, group = Model, color = Model), alpha = 0.8) +
+  geom_line(data = sum_stat_trendy_nbp, aes(x= year, y= med), color= "blue", size= 0.7) +
+  geom_line(data = gcb_sland, aes(x= Year, y= NBP_obs), color = "red", size = 0.7) +
   theme(
     panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
     panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
     panel.background= element_rect(fill = "white"),
     legend.position = "none",
     panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
-  scale_color_manual(values = color_map) +
   labs(
     y = expression(~PgC~yr^{-1}),
     x = "Year"
@@ -151,7 +136,7 @@ p_trendy_nbp <- ggplot() +
                      expand = c(0,0)) +
   scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= -4, to= 5, by= 1),
                      expand = c(0,0)) +
-  coord_cartesian(xlim = c(1979, 2014), ylim = c(-3.5, 5.2), clip = "off")
+  coord_cartesian(xlim = c(1979, 2017), ylim = c(-3.5, 5.2), clip = "off")
 
 
 ggsave(here("figures/annualTotals_trendy_nbp.png"), plot= p_trendy_nbp,width = 14, height = 10, dpi = 300)
@@ -214,11 +199,11 @@ sum_stat_cmip_gpp <- cmip_gpp_long %>%
 #---
 p_cmip_gpp <- ggplot() +
   geom_point(data = last_pts_cmip_gpp, aes(x= year, y= GPP, color = Model), size = 0.5) +
-  scale_color_grey(start = 0.2, end = 0.6) +
+  scale_color_viridis_d(option = "D")  +
   ggrepel::geom_text_repel(
     data = last_pts_cmip_gpp,
     aes(x= year, y= GPP, label = Model, color = Model),
-    direction = "y", hjust = -0.2, nudge_x = 0.5, segment.size = 0.2, size = 3,
+    direction = "y", hjust = -0.7, nudge_x = 0.5, segment.size = 0.4, size = 2,
     min.segment.length = 0) +
   geom_ribbon(data = sum_stat_cmip_gpp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.15) +
   geom_line(data = cmip_gpp_long, aes(x= year, y=  GPP, group = Model, color = Model)) +
@@ -233,11 +218,11 @@ p_cmip_gpp <- ggplot() +
     y = expression(~PgC~yr^{-1}),
     x = "Year"
   ) +
-  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2015, by= 5),
+  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2011, by= 5),
                      expand = c(0,0)) +
   scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= 100, to= 225, by= 25),
                      expand = c(0,0)) +
-  coord_cartesian(xlim = c(1979, 2014.9), ylim = c(95, 230), clip = "off")
+  coord_cartesian(xlim = c(1979, 2017), ylim = c(95, 230), clip = "off")
 
 ggsave(here("figures/annualTotals_cmip_gpp.png"), plot= p_cmip_gpp,width = 14, height = 10, dpi = 300)
 
@@ -256,33 +241,18 @@ sum_stat_cmip_nbp <- cmip_nbp_long %>%
             med = median(NBP, na.rm = TRUE),
             p75 = quantile(NBP, .75, na.rm = TRUE), .groups = "drop")
 
-# Color  mapping:
-grau_palette <- grey_pal()(length(unique(cmip_nbp_long$Model)) - 3)
-
-highlight_colors <- c(
-  "EC-Earth3-Veg-LR" = "firebrick",
-  "INM-CM5-0"  = "darkorange",
-  "INM-CM4-8" = "darkgreen"
-)
-
-# Alle Modelle als Levels
-all_models <- unique(cmip_nbp_long$Model)
-
-# Farben-Mapping: Highlights bunt, Rest Grautöne
-color_map <- c(highlight_colors,
-               setNames(grau_palette, setdiff(all_models, names(highlight_colors))))
-
 #---
 p_cmip_nbp <- ggplot() +
   geom_point(data = last_pts_cmip_nbp, aes(x= year, y= NBP, color = Model), size = 0.5) +
+  scale_color_viridis_d("E") +
   ggrepel::geom_text_repel(
     data = last_pts_cmip_nbp,
     aes(x= year, y= NBP, label = Model, color = Model),
-    direction = "y", hjust = -0.3, nudge_x = 0.5, segment.size = 0.2, size = 3,
+    direction = "y", hjust = -0.7, nudge_x = 0.5, segment.size = 0.4, size = 2,
     min.segment.length = 0) +
   geom_hline(yintercept= 0, color= "black", size= 0.1) +
   geom_ribbon(data = sum_stat_cmip_nbp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.25) +
-  geom_line(data = cmip_nbp_long, aes(x= year, y=  NBP, group = Model, color = Model), alpha = 0.8) +
+  geom_line(data = cmip_nbp_long, aes(x= year, y=  NBP, group = Model, color = Model), alpha = 0.6) +
   geom_line(data = sum_stat_cmip_nbp, aes(x= year, y= med), color= "blue", size= 0.8) +
   theme(
     panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
@@ -290,7 +260,6 @@ p_cmip_nbp <- ggplot() +
     panel.background= element_rect(fill = "white"),
     legend.position = "none",
     panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
-  scale_color_manual(values = color_map) +
   labs(
     y = expression(~PgC~yr^{-1}),
     x = "Year"
@@ -299,7 +268,7 @@ p_cmip_nbp <- ggplot() +
                      expand = c(0,0)) +
   scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= -7, to= 15, by= 1),
                      expand = c(0,0)) +
-  coord_cartesian(xlim = c(1979, 2014), ylim = c(-6, 14), clip = "off")
+  coord_cartesian(xlim = c(1979, 2017), ylim = c(-6, 14), clip = "off")
 
 ggsave(here("figures/annualTotals_cmip_nbp.png"), plot= p_cmip_nbp,width = 14, height = 10, dpi = 300)
 
@@ -360,11 +329,11 @@ sum_stat_mstmip_sg3_gpp <- mstmip_sg3_gpp_long %>%
 #---
 p_mstmip_sg3_gpp <- ggplot() +
   geom_point(data = last_pts_mstmip_sg3_gpp, aes(x= year, y= GPP, color = Model), size = 0.5) +
-  scale_color_grey(start = 0.2, end = 0.6) +
+  scale_color_viridis_d("D") +
   ggrepel::geom_text_repel(
     data = last_pts_mstmip_sg3_gpp,
     aes(x= year, y= GPP, label = Model, color = Model),
-    direction = "y", hjust = -0.2, nudge_x = 0.5, segment.size = 0.2, size = 3,
+    direction = "y", hjust = -0.2, nudge_x = 0.5, segment.size = 0.4, size = 3,
     min.segment.length = 0) +
   geom_ribbon(data = sum_stat_mstmip_sg3_gpp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.15) +
   geom_line(data = mstmip_sg3_gpp_long, aes(x= year, y=  GPP, group = Model, color = Model)) +
@@ -383,7 +352,7 @@ p_mstmip_sg3_gpp <- ggplot() +
                      expand = c(0,0)) +
   scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= 75, to= 225, by= 25),
                      expand = c(0,0)) +
-  coord_cartesian(xlim = c(1979, 2014), ylim = c(70, 205), clip = "off")
+  coord_cartesian(xlim = c(1979, 2017), ylim = c(70, 205), clip = "off")
 
 ggsave(here("figures/annualTotals_mstmip_sg3_gpp.png"), plot= p_mstmip_sg3_gpp,width = 14, height = 10, dpi = 300)
 
@@ -401,29 +370,13 @@ sum_stat_mstmip_sg3_nbp <- mstmip_sg3_nbp_long %>%
             med = median(NBP, na.rm = TRUE),
             p75 = quantile(NBP, .75, na.rm = TRUE), .groups = "drop")
 
-# Color  mapping:
-grau_palette <- grey_pal()(length(unique(mstmip_sg3_nbp_long$Model)) - 3)
-
-highlight_colors <- c(
-  "CLM4_SG3" = "firebrick",
-  "CLASS-CTEM-N_SG3"  = "darkorange",
-  "SiB3_SG3" = "darkgreen"
-)
-
-# Alle Modelle als Levels
-all_models <- unique(mstmip_sg3_nbp_long$Model)
-
-# Farben-Mapping: Highlights bunt, Rest Grautöne
-color_map <- c(highlight_colors,
-               setNames(grau_palette, setdiff(all_models, names(highlight_colors))))
-
 #---
 p_mstmip_sg3_nbp <- ggplot() +
   geom_point(data = last_pts_mstmip_sg3_nbp, aes(x= year, y= NBP, color = Model), size = 0.5) +
   ggrepel::geom_text_repel(
     data = last_pts_mstmip_sg3_nbp,
     aes(x= year, y= NBP, label = Model, color = Model),
-    direction = "y", hjust = -0.3, nudge_x = 0.5, segment.size = 0.2, size = 3,
+    direction = "y", hjust = -0.3, nudge_x = 0.5, segment.size = 0.4, size = 3,
     min.segment.length = 0) +
   geom_hline(yintercept= 0, color= "black", size= 0.1) +
   geom_ribbon(data = sum_stat_mstmip_sg3_nbp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.25) +
@@ -435,7 +388,7 @@ p_mstmip_sg3_nbp <- ggplot() +
     panel.background= element_rect(fill = "white"),
     legend.position = "none",
     panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
-  scale_color_manual(values = color_map) +
+  scale_color_viridis_d("D") +
   labs(
     y = expression(~PgC~yr^{-1}),
     x = "Year"
@@ -444,8 +397,7 @@ p_mstmip_sg3_nbp <- ggplot() +
                      expand = c(0,0)) +
   scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= -12, to= 15, by= 1),
                      expand = c(0,0)) +
-  coord_cartesian(xlim = c(1979, 2014.5), ylim = c(-10.5, 3.5), clip = "off")
-
+  coord_cartesian(xlim = c(1979, 2017), ylim = c(-10.5, 3.5), clip = "off")
 
 ggsave(here("figures/annualTotals_mstmip_sg3_nbp.png"), plot= p_mstmip_sg3_nbp,width = 14, height = 10, dpi = 300)
 
@@ -506,11 +458,11 @@ sum_stat_mstmip_sg1_gpp <- mstmip_sg1_gpp_long %>%
 #---
 p_mstmip_sg1_gpp <- ggplot() +
   geom_point(data = last_pts_mstmip_sg1_gpp, aes(x= year, y= GPP, color = Model), size = 0.5) +
-  scale_color_grey(start = 0.2, end = 0.6) +
+  scale_color_viridis_d("D") +
   ggrepel::geom_text_repel(
     data = last_pts_mstmip_sg1_gpp,
     aes(x= year, y= GPP, label = Model, color = Model),
-    direction = "y", hjust = -0.2, nudge_x = 0.5, segment.size = 0.2, size = 3,
+    direction = "y", hjust = -0.2, nudge_x = 0.5, segment.size = 0.4, size = 3,
     min.segment.length = 0) +
   geom_ribbon(data = sum_stat_mstmip_sg1_gpp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.15) +
   geom_line(data = mstmip_sg1_gpp_long, aes(x= year, y=  GPP, group = Model, color = Model)) +
@@ -529,7 +481,7 @@ p_mstmip_sg1_gpp <- ggplot() +
                      expand = c(0,0)) +
   scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= 50, to= 225, by= 25),
                      expand = c(0,0)) +
-  coord_cartesian(xlim = c(1979, 2014), ylim = c(48, 177), clip = "off")
+  coord_cartesian(xlim = c(1979, 2017), ylim = c(48, 177), clip = "off")
 
 ggsave(here("figures/annualTotals_mstmip_sg1_gpp.png"), plot= p_mstmip_sg1_gpp,width = 14, height = 10, dpi = 300)
 
@@ -549,29 +501,13 @@ sum_stat_mstmip_sg1_nbp <- mstmip_sg1_nbp_long %>%
             med = median(NBP, na.rm = TRUE),
             p75 = quantile(NBP, .75, na.rm = TRUE), .groups = "drop")
 
-# Color  mapping:
-grau_palette <- grey_pal()(length(unique(mstmip_sg1_nbp_long$Model)) - 3)
-
-highlight_colors <- c(
-  "LPJ-wsl_SG1" = "firebrick",
-  "GTEC_SG1"  = "darkorange",
-  "CLASS-CTEM-N_SG1" = "darkgreen"
-)
-
-# Alle Modelle als Levels
-all_models <- unique(mstmip_sg1_nbp_long$Model)
-
-# Farben-Mapping: Highlights bunt, Rest Grautöne
-color_map <- c(highlight_colors,
-               setNames(grau_palette, setdiff(all_models, names(highlight_colors))))
-
 #---
 p_mstmip_sg1_nbp <- ggplot() +
   geom_point(data = last_pts_mstmip_sg1_nbp, aes(x= year, y= NBP, color = Model), size = 0.5) +
   ggrepel::geom_text_repel(
     data = last_pts_mstmip_sg1_nbp,
     aes(x= year, y= NBP, label = Model, color = Model),
-    direction = "y", hjust = -0.3, nudge_x = 0.5, segment.size = 0.2, size = 3,
+    direction = "y", hjust = -0.3, nudge_x = 0.5, segment.size = 0.4, size = 3,
     min.segment.length = 0) +
   geom_hline(yintercept= 0, color= "black", size= 0.1) +
   geom_ribbon(data = sum_stat_mstmip_sg1_nbp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.25) +
@@ -583,7 +519,7 @@ p_mstmip_sg1_nbp <- ggplot() +
     panel.background= element_rect(fill = "white"),
     legend.position = "none",
     panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
-  scale_color_manual(values = color_map) +
+  scale_color_viridis_d("D") +
   labs(
     y = expression(~PgC~yr^{-1}),
     x = "Year"
@@ -592,8 +528,228 @@ p_mstmip_sg1_nbp <- ggplot() +
                      expand = c(0,0)) +
   scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= -12, to= 15, by= 1),
                      expand = c(0,0)) +
-  coord_cartesian(xlim = c(1979, 2014.5), ylim = c(-3.2, 4.2), clip = "off")
+  coord_cartesian(xlim = c(1979, 2017), ylim = c(-3.2, 4.2), clip = "off")
 
 ggsave(here("figures/annualTotals_mstmip_sg1_nbp.png"), plot= p_mstmip_sg1_nbp,width = 14, height = 10, dpi = 300)
 
 
+# ---------
+### Save all Plots as R data to have them available for other scripts:
+save(p_trendy_gpp, p_trendy_nbp, p_cmip_gpp, p_cmip_nbp, p_mstmip_sg1_gpp, p_mstmip_sg1_nbp, p_mstmip_sg3_gpp, p_mstmip_sg3_nbp,
+      file = here("data/annualTotals_plots_labeled.RData"))
+
+
+# Plots without label for results chapter --------------------------------------------------
+
+## TRENDY
+### GPP:
+p_trendy_gpp_noLabel <- ggplot() +
+  geom_ribbon(data = sum_stat_trendy_gpp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.15) +
+  geom_line(data = trendy_gpp_long, aes(x= year, y=  GPP, group = Model, color = Model)) +
+  geom_line(data = sum_stat_trendy_gpp, aes(x= year, y= med), color= "blue", size= 0.8) +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    legend.position = "none",
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+  labs(
+    y = expression(~PgC~yr^{-1}),
+    x = "Year"
+  ) +
+  scale_color_grey(start= 0.3, end= 0.7) +
+  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2017, by= 5),
+                     expand = c(0,0)) +
+  scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= 75, to= 200, by= 25),
+                     expand = c(0,0)) +
+  coord_cartesian(xlim = c(1979, 2013), ylim = c(70, 215), clip = "off")
+
+ggsave(here("figures/annualTotals_trendy_gpp_noLabel.png"), plot= p_trendy_gpp_noLabel,width = 14, height = 10, dpi = 300)
+
+### NBP:
+
+p_trendy_nbp_noLabel <- ggplot() +
+  geom_hline(yintercept= 0, color= "black", size= 0.1) +
+  geom_ribbon(data = sum_stat_trendy_nbp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.35) +
+  geom_line(data = trendy_nbp_long, aes(x= year, y=  NBP, group = Model, color = Model), alpha = 0.8) +
+  geom_line(data = sum_stat_trendy_nbp, aes(x= year, y= med), color= "blue", size= 0.7) +
+  geom_line(data = gcb_sland, aes(x= Year, y= NBP_obs), color = "red", size = 0.7) +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    legend.position = "none",
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+  labs(
+    y = expression(~PgC~yr^{-1}),
+    x = "Year") +
+  scale_color_grey(start= 0.3, end= 0.7) +
+  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2015, by= 5),
+                     expand = c(0,0)) +
+  scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= -4, to= 5, by= 1),
+                     expand = c(0,0)) +
+  coord_cartesian(xlim = c(1979, 2013), ylim = c(-3.5, 5.2), clip = "off")
+
+
+ggsave(here("figures/annualTotals_trendy_nbp_noLabel.png"), plot= p_trendy_nbp_noLabel,width = 14, height = 10, dpi = 300)
+
+
+
+### CMIP -------------------------------------------------------------------
+### GPP:
+p_cmip_gpp_noLabel <- ggplot() +
+  geom_ribbon(data = sum_stat_cmip_gpp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.15) +
+  geom_line(data = cmip_gpp_long, aes(x= year, y=  GPP, group = Model, color = Model)) +
+  geom_line(data = sum_stat_cmip_gpp, aes(x= year, y= med), color= "blue", size= 0.8) +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    legend.position = "none",
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+  labs(
+    y = expression(~PgC~yr^{-1}),
+    x = "Year") +
+  scale_color_grey(start= 0.3, end= 0.7) +
+  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2011, by= 5),
+                     expand = c(0,0)) +
+  scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= 100, to= 225, by= 25),
+                     expand = c(0,0)) +
+  coord_cartesian(xlim = c(1979, 2013), ylim = c(95, 230), clip = "off")
+
+ggsave(here("figures/annualTotals_cmip_gpp_noLabel.png"), plot= p_cmip_gpp_noLabel,width = 14, height = 10, dpi = 300)
+
+
+### NBP:
+p_cmip_nbp_noLabel <- ggplot() +
+  geom_hline(yintercept= 0, color= "black", size= 0.1) +
+  geom_ribbon(data = sum_stat_cmip_nbp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.25) +
+  geom_line(data = cmip_nbp_long, aes(x= year, y=  NBP, group = Model, color = Model), alpha = 0.6) +
+  geom_line(data = sum_stat_cmip_nbp, aes(x= year, y= med), color= "blue", size= 0.8) +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    legend.position = "none",
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+  labs(
+    y = expression(~PgC~yr^{-1}),
+    x = "Year"
+  ) +
+  scale_color_grey(start= 0.3, end= 0.7) +
+  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2015, by= 5),
+                     expand = c(0,0)) +
+  scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= -7, to= 15, by= 1),
+                     expand = c(0,0)) +
+  coord_cartesian(xlim = c(1979, 2013), ylim = c(-6, 14), clip = "off")
+
+ggsave(here("figures/annualTotals_cmip_nbp_noLabel.png"), plot= p_cmip_nbp_noLabel,width = 14, height = 10, dpi = 300)
+
+
+### mstmip_sg3 -------------------------------------------------------------------
+### GPP:
+p_mstmip_sg3_gpp_noLabel <- ggplot() +
+  geom_ribbon(data = sum_stat_mstmip_sg3_gpp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.15) +
+  geom_line(data = mstmip_sg3_gpp_long, aes(x= year, y=  GPP, group = Model, color = Model)) +
+  geom_line(data = sum_stat_mstmip_sg3_gpp, aes(x= year, y= med), color= "blue", size= 0.8) +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    legend.position = "none",
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+  labs(
+    y = expression(~PgC~yr^{-1}),
+    x = "Year") +
+  scale_color_grey(start= 0.3, end= 0.7) +
+  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2015, by= 5),
+                     expand = c(0,0)) +
+  scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= 75, to= 225, by= 25),
+                     expand = c(0,0)) +
+  coord_cartesian(xlim = c(1979, 2013), ylim = c(70, 205), clip = "off")
+
+ggsave(here("figures/annualTotals_mstmip_sg3_gpp_noLabel.png"), plot= p_mstmip_sg3_gpp_noLabel,width = 14, height = 10, dpi = 300)
+
+### NBP:
+p_mstmip_sg3_nbp_noLabel <- ggplot() +
+  geom_hline(yintercept= 0, color= "black", size= 0.1) +
+  geom_ribbon(data = sum_stat_mstmip_sg3_nbp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.25) +
+  geom_line(data = mstmip_sg3_nbp_long, aes(x= year, y=  NBP, group = Model, color = Model), alpha = 0.8) +
+  geom_line(data = sum_stat_mstmip_sg3_nbp, aes(x= year, y= med), color= "blue", size= 0.8) +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    legend.position = "none",
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+  scale_color_grey(start= 0.3, end= 0.7) +
+  labs(
+    y = expression(~PgC~yr^{-1}),
+    x = "Year"
+  ) +
+  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2015, by= 5),
+                     expand = c(0,0)) +
+  scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= -12, to= 15, by= 1),
+                     expand = c(0,0)) +
+  coord_cartesian(xlim = c(1979, 2013), ylim = c(-10.5, 3.5), clip = "off")
+
+ggsave(here("figures/annualTotals_mstmip_sg3_nbp_noLabel.png"), plot= p_mstmip_sg3_nbp_noLabel,width = 14, height = 10, dpi = 300)
+
+
+### mstmip_sg1 -------------------------------------------------------------------
+## GPP:
+p_mstmip_sg1_gpp_noLabel <- ggplot() +
+  geom_ribbon(data = sum_stat_mstmip_sg1_gpp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.15) +
+  geom_line(data = mstmip_sg1_gpp_long, aes(x= year, y=  GPP, group = Model, color = Model)) +
+  geom_line(data = sum_stat_mstmip_sg1_gpp, aes(x= year, y= med), color= "blue", size= 0.8) +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    legend.position = "none",
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+  labs(
+    y = expression(~PgC~yr^{-1}),
+    x = "Year"
+  ) +
+  scale_color_grey(start= 0.3, end= 0.7) +
+  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2015, by= 5),
+                     expand = c(0,0)) +
+  scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= 50, to= 225, by= 25),
+                     expand = c(0,0)) +
+  coord_cartesian(xlim = c(1979, 2013), ylim = c(48, 177), clip = "off")
+
+ggsave(here("figures/annualTotals_mstmip_sg1_gpp_noLabel.png"), plot= p_mstmip_sg1_gpp_noLabel,width = 14, height = 10, dpi = 300)
+
+
+### NBP:
+
+p_mstmip_sg1_nbp_noLabel <- ggplot() +
+  geom_hline(yintercept= 0, color= "black", size= 0.1) +
+  geom_ribbon(data = sum_stat_mstmip_sg1_nbp, aes(year, ymin = p25, ymax = p75), fill = "blue", alpha = 0.25) +
+  geom_line(data = mstmip_sg1_nbp_long, aes(x= year, y=  NBP, group = Model, color = Model), alpha = 0.8) +
+  geom_line(data = sum_stat_mstmip_sg1_nbp, aes(x= year, y= med), color= "blue", size= 0.8) +
+  theme(
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_line(color = "grey90", linewidth = 0.2),
+    panel.background= element_rect(fill = "white"),
+    legend.position = "none",
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +
+  scale_color_grey(start= 0.3, end= 0.7) +
+  labs(
+    y = expression(~PgC~yr^{-1}),
+    x = "Year"
+  ) +
+  scale_x_continuous(labels = label_number(accuracy = 1, big.mark= ""), breaks= seq(from= 1980, to= 2015, by= 5),
+                     expand = c(0,0)) +
+  scale_y_continuous(labels = label_number(accuracy = 1), breaks= seq(from= -12, to= 15, by= 1),
+                     expand = c(0,0)) +
+  coord_cartesian(xlim = c(1979, 2013), ylim = c(-3.2, 4.2), clip = "off")
+
+ggsave(here("figures/annualTotals_mstmip_sg1_nbp_noLabel.png"), plot= p_mstmip_sg1_nbp_noLabel,width = 14, height = 10, dpi = 300)
+
+
+#----------------
+### Storing all plots as R data to have them available for other scripts:
+save(p_trendy_gpp_noLabel, p_trendy_nbp_noLabel, p_cmip_gpp_noLabel, p_cmip_nbp_noLabel, p_mstmip_sg1_gpp_noLabel, p_mstmip_sg1_nbp_noLabel, p_mstmip_sg3_gpp_noLabel, p_mstmip_sg3_nbp_noLabel,
+     file = here("data/annualTotals_plots_noLabel.RData"))
